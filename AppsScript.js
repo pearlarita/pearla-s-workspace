@@ -169,4 +169,3 @@ function initAllSheets() {
   });
   SpreadsheetApp.getActiveSpreadsheet().toast('Alle ark er opprettet!');
 }
-
