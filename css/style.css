@@ -257,7 +257,7 @@ code{background:var(--surface2);padding:2px 6px;border-radius:5px;font-size:12px
   .sidebar-btn:hover{background:transparent;color:var(--text);font-size:14.5px}
   .sidebar-btn.active{background:var(--yellow);color:var(--yellow-text);border:1px solid var(--yellow-mid)}
   .sidebar-icon{font-size:18px;width:24px;text-align:center;flex-shrink:0}
-  .scroll-area{grid-area:main;padding:1.5rem 2rem 2rem;max-width:900px;overflow-y:auto;height:100%}
+  .scroll-area{grid-area:main;padding:1.5rem 2rem 2rem;overflow-y:auto;height:100%;width:100%;box-sizing:border-box}
   .desktop-cols{display:grid;grid-template-columns:1fr 280px;gap:1.5rem;align-items:start}
   .desktop-main,.desktop-side{display:flex;flex-direction:column;gap:1rem}
   .stat-grid{grid-template-columns:repeat(4,1fr)}
