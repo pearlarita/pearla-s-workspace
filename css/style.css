@@ -1,434 +1,529 @@
-/* Pearla's Workspace - Main Stylesheet */
-@import url('https://fonts.googleapis.com/css2?family=Manjari:wght@100;400;700&display=swap');
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Pearla's Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manjari:wght@100;400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="js/gate.js"></script>
+</head>
+<body>
+
+<div class="app">
+  <aside class="desktop-sidebar">
+    <div class="sidebar-logo" onclick="showPage('dashboard',null,'sb-jobb-toggle')" style="cursor:pointer">&#11088; Pearla's Workspace</div>
+
+    <button class="sidebar-group-btn" id="sb-jobb-toggle" onclick="toggleJobbDropdown();showPage('dashboard',null,'sb-jobb-toggle')">
+      <span class="sidebar-icon">&#128188;</span>
+      <span>Jobb</span>
+      <span class="sb-chevron" id="sb-chevron">&#8964;</span>
+    </button>
+    <div id="sb-jobb-children" class="sb-children">
+      <button class="sidebar-btn sidebar-sub" id="sb-dag" onclick="showPage('dag',null,'sb-dag')"><span class="sidebar-icon">&#9728;&#65039;</span> Dag</button>
+      <button class="sidebar-btn sidebar-sub" id="sb-prosjekt" onclick="showPage('prosjekt',null,'sb-prosjekt')"><span class="sidebar-icon">&#128202;</span> Prosjekter</button>
+      <button class="sidebar-btn sidebar-sub" id="sb-mote" onclick="showPage('mote',null,'sb-mote')"><span class="sidebar-icon">&#128101;</span> M&#248;te</button>
+      <button class="sidebar-btn sidebar-sub" id="sb-retro" onclick="showPage('retro',null,'sb-retro')"><span class="sidebar-icon">&#128260;</span> Retro</button>
+      <button class="sidebar-btn sidebar-sub" id="sb-timer" onclick="showPage('timer',null,'sb-timer')"><span class="sidebar-icon">&#9200;</span> Timef&#248;ring</button>
+      <button class="sidebar-btn sidebar-sub" id="sb-mer" onclick="showPage('mer',null,'sb-mer')"><span class="sidebar-icon">&#9889;</span> Energi</button>
+      <button class="sidebar-btn sidebar-sub" id="sb-stats" onclick="showPage('stats',null,'sb-stats')"><span class="sidebar-icon">&#128200;</span> Statistikk</button>
+      <button class="sidebar-btn sidebar-sub" id="sb-matrise" onclick="showPage('matrise',null,'sb-matrise')"><span class="sidebar-icon">&#127919;</span> Prioriteringsmatrise</button>
+      <button class="sidebar-btn sidebar-sub" id="sb-notater" onclick="showPage('notater',null,'sb-notater')"><span class="sidebar-icon">&#128203;</span> Notater &amp; rutiner</button>
+    </div>
+
+    <a href="personal.html" class="sidebar-quicklink">
+      <span class="sidebar-icon">&#127968;</span>
+      <span>Personal</span>
+      <span style="font-size:11px;opacity:.6;margin-left:auto">&#8599;</span>
+    </a>
+  </aside>
+
+  <div class="header">
+    <div class="header-left">
+      <div style="display:flex;align-items:center;gap:8px"><div class="day-label" id="day-label"></div><div class="day-label" id="clock-label" style="opacity:.6"></div></div>
+      <div class="header-title" id="header-title">Pearla's Workspace</div>
+    </div>
+    <div class="header-right">
+      <button onclick="toggleGlobalSearch()" style="background:none;border:none;cursor:pointer;font-size:18px;padding:4px;color:var(--muted)" title="Søk på tvers">&#128269;</button>
+      <div class="sync-dot off" id="sync-dot"></div>
+      <div class="streak-row" id="streak-row"></div>
+    </div>
+  </div>
+
+  <div class="nb-subheader" id="nb-subheader" style="display:none"><div class="nb-tabs" id="nb-tabs"></div><button class="nb-new-tab-btn" onclick="addNotebook()">+ Mappe</button></div>
+  <div class="scroll-area" id="scroll-area">
+
+    <!-- DAG -->
+    <div class="page active" id="page-dag">
+      <div id="banner-wrap"></div>
+      <div id="today-meetings-wrap"></div>
+      <div class="desktop-cols">
+        <div class="desktop-main">
+          <div id="task-list-wrap"><div class="section-label">&#11088; Dagens 3 viktigste</div><div class="card" id="task-list"></div></div><div id="backlog-wrap"></div><div id="archive-wrap"></div>
+          <div><div class="section-label">&#128221; Parkeringsplass</div>
+            <div class="card"><div class="parking-header"><span class="parking-title">Skriv det, glem det, fortsett</span><span class="parking-sub">L&#248;se tanker</span></div>
+            <textarea id="parking-pad" placeholder="Ideer, tanker, ting du ikke m&#229; glemme&#8230;"></textarea></div>
+          </div>
+          <div><div class="section-label">&#128197; Ukestidslinje</div><div class="card-pad" id="week-timeline"></div></div>
+          <div><div class="section-label">&#128467; M&#229;nedskalender</div>
+            <div class="card-pad">
+              <div class="cal-header"><button class="cal-nav" onclick="changeMonth(-1)">&#8249;</button><span class="cal-month-lbl" id="cal-month-label"></span><button class="cal-nav" onclick="changeMonth(1)">&#8250;</button></div>
+              <div class="cal-grid" id="cal-grid"></div>
+            </div>
+          </div>
+        </div>
+        <div class="desktop-side">
+          <div><div class="section-label">&#128522; Hum&#248;r</div>
+            <div class="card-pad"><div class="mood-row" id="mood-row"></div><div class="mood-history" id="mood-history"></div></div>
+          </div>
+          <div><div class="section-label">&#9201; Pomodoro</div>
+            <div class="card-pad">
+              <div class="pomo-mode-row">
+                <button class="pomo-mode active" id="pm-focus" onclick="setMode('focus')">Fokus 25</button>
+                <button class="pomo-mode" id="pm-short" onclick="setMode('short')">Pause 5</button>
+                <button class="pomo-mode" id="pm-long" onclick="setMode('long')">Lang 15</button>
+              </div>
+              <div class="pomo-timer-big" id="pomo-display">25:00</div>
+              <div class="pomo-label" id="pomo-label">Fokus&#248;kt</div>
+              <div class="pomo-btns"><button class="pomo-btn start" id="pomo-toggle" onclick="togglePomo()">Start</button><button class="pomo-btn" onclick="resetPomo()">Nullstill</button></div>
+              <div class="pomo-dots" id="pomo-dots"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROSJEKTER -->
+    <div class="page" id="page-prosjekt">
+      <div class="section-label">&#128202; Prosjekter</div>
+      <div class="card" id="project-list"></div>
+    </div>
+
+    <!-- M&#216;TE -->
+    <div class="page" id="page-mote">
+      <div class="section-label">&#128101; Nytt m&#248;tenotat</div>
+      <div class="card-pad">
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end">
+          <div class="field" style="margin-bottom:0"><label>M&#248;tetittel</label><input id="m-title" placeholder="Eksempel: Q2 planlegging"></div>
+          <div class="field" style="margin-bottom:0"><label>Kategori</label>
+            <div style="display:flex;gap:6px">
+              <select id="m-cat" style="border:1.5px solid var(--border);border-radius:10px;padding:.75rem .875rem;font-size:14px;font-family:var(--font);color:var(--text);background:var(--bg);outline:none;-webkit-appearance:none;min-width:120px" onchange="checkNewCat(this)">
+                <option value="">Ingen</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;margin:.75rem 0 .875rem;flex-wrap:wrap" id="cat-chips"></div>
+        <div class="field"><label>Deltakere</label><input id="m-people" placeholder="Navn, navn&#8230;"></div>
+        <div class="field"><label>Beslutninger</label><textarea id="m-decisions" placeholder="Hva ble bestemt?"></textarea></div>
+        <div class="field"><label>Mine neste handlinger</label><textarea id="m-actions" placeholder="&#201;n handling per linje"></textarea></div>
+        <button class="big-btn yellow" onclick="saveMeeting()">&#128190; Lagre m&#248;tenotat</button>
+      </div>
+      <div class="section-label" style="margin-top:.25rem">&#128339; Tidligere m&#248;ter</div>
+      <div id="saved-meetings"></div>
+    </div>
+
+    <!-- RETRO -->
+    <div class="page" id="page-retro">
+      <div class="retro-tabs">
+        <button class="retro-tab active" id="rtab-daily" onclick="switchRetroTab('daily')">&#128337; Daglig</button>
+        <button class="retro-tab" id="rtab-weekly" onclick="switchRetroTab('weekly')">&#128197; Ukentlig</button>
+        <button class="retro-tab" id="rtab-monthly" onclick="switchRetroTab('monthly')">&#128336; M&#229;nedlig</button>
+      </div>
+      <div id="retro-panel-daily">
+        <div class="retro-period-lbl" id="retro-daily-lbl"></div>
+        <div class="card-pad">
+          <div class="retro-block"><div class="retro-q">Hva fikk jeg til i dag?</div><textarea class="retro-a" id="rd-good" rows="2" placeholder="Store eller sm&#229; seire&#8230;"></textarea></div>
+          <div class="retro-block"><div class="retro-q">Hva stoppet meg?</div><textarea class="retro-a" id="rd-block" rows="2" placeholder="Distraksjoner, hindringer&#8230;"></textarea></div>
+          <div class="retro-block"><div class="retro-q">En ting jeg vil gj&#248;re annerledes i morgen</div><textarea class="retro-a" id="rd-next" rows="2" placeholder="Liten justering&#8230;"></textarea></div>
+          <div class="retro-block"><div class="retro-q">Energiniv&#229; i dag</div><div class="energy-stars" id="rd-energy-stars"></div></div>
+          <button class="big-btn pink" onclick="saveRetroDaily()">&#128190; Lagre dagens retro</button>
+        </div>
+        <div class="section-label" style="margin-top:.25rem">&#128339; Tidligere dager</div>
+        <div id="retro-daily-history"></div>
+      </div>
+      <div id="retro-panel-weekly" style="display:none">
+        <div class="retro-period-lbl" id="retro-weekly-lbl"></div>
+        <div class="card-pad">
+          <div class="retro-block"><div class="retro-q">Hva gikk bra denne uken?</div><textarea class="retro-a" id="rw-good" rows="2" placeholder="Ting du er forn&#248;yd med&#8230;"></textarea></div>
+          <div class="retro-block"><div class="retro-q">Hva var vanskelig?</div><textarea class="retro-a" id="rw-hard" rows="2" placeholder="Utfordringer&#8230;"></textarea></div>
+          <div class="retro-block"><div class="retro-q">Hva vil jeg fokusere p&#229; neste uke?</div><textarea class="retro-a" id="rw-next" rows="2" placeholder="Ett konkret m&#229;l&#8230;"></textarea></div>
+          <div class="retro-block"><div class="retro-q">Hva er jeg stolt av?</div><textarea class="retro-a" id="rw-proud" rows="2" placeholder="Vis deg selv litt anerkjennelse&#8230;"></textarea></div>
+          <button class="big-btn pink" onclick="saveRetroWeekly()">&#128190; Lagre ukens retro</button>
+        </div>
+        <div class="section-label" style="margin-top:.25rem">&#128339; Tidligere uker</div>
+        <div id="retro-weekly-history"></div>
+      </div>
+      <div id="retro-panel-monthly" style="display:none">
+        <div class="retro-period-lbl" id="retro-monthly-lbl"></div>
+        <div class="card-pad">
+          <div class="retro-block"><div class="retro-q">M&#229;nedens st&#248;rste seier?</div><textarea class="retro-a" id="rm-win" rows="2" placeholder="Noe du er genuint stolt av&#8230;"></textarea></div>
+          <div class="retro-block"><div class="retro-q">Hva l&#230;rte jeg om meg selv?</div><textarea class="retro-a" id="rm-learn" rows="2" placeholder="Innsikt om energi, fokus, vaner&#8230;"></textarea></div>
+          <div class="retro-block"><div class="retro-q">En vane inn, en vane ut</div><textarea class="retro-a" id="rm-change" rows="2" placeholder="Hva vil du slutte med / starte med?"></textarea></div>
+          <div class="retro-block"><div class="retro-q">Tre ord som beskriver m&#229;neden</div><textarea class="retro-a" id="rm-words" rows="1" placeholder="Ord 1, ord 2, ord 3&#8230;"></textarea></div>
+          <div class="retro-block"><div class="retro-q">M&#229;l for neste m&#229;ned</div><textarea class="retro-a" id="rm-goal" rows="2" placeholder="Konkret og realistisk&#8230;"></textarea></div>
+          <button class="big-btn pink" onclick="saveRetroMonthly()">&#128190; Lagre m&#229;nedens retro</button>
+        </div>
+        <div class="section-label" style="margin-top:.25rem">&#128339; Tidligere m&#229;neder</div>
+        <div id="retro-monthly-history"></div>
+      </div>
+    </div>
+
+    <!-- TIMEF&#216;RING -->
+    <div class="page" id="page-timer">
+      <div class="section-label">&#9201; Stemple inn/ut</div>
+      <div class="card-pad timer-widget">
+        <div class="timer-project-row">
+          <select id="timer-project-sel" class="timer-sel"><option value="">Velg prosjekt&#8230;</option></select>
+          <input id="timer-task-desc" class="timer-task-input" placeholder="Hva jobber du med?">
+        </div>
+        <div class="timer-display-row">
+          <div>
+            <div class="timer-live-display" id="timer-live">00:00:00</div>
+            <div id="timer-stamp-info" style="font-size:12px;color:var(--muted);margin-top:4px"></div>
+          </div>
+          <div class="timer-btn-col">
+            <button class="timer-action-btn go" id="timer-start-btn" onclick="stempelInn()">&#9654; Stemple inn</button>
+            <button class="timer-action-btn log" id="timer-out-btn" onclick="stempelUt()" style="display:none">&#9632; Stemple ut</button>
+          </div>
+        </div>
+      </div>
+      <div class="section-label">&#9999;&#65039; Manuell registrering</div>
+      <div class="card-pad">
+        <div class="field"><label>Prosjekt</label><select id="man-project" class="timer-sel" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:.75rem .875rem;font-size:15px;font-family:var(--font);color:var(--text);background:var(--bg);outline:none;-webkit-appearance:none"><option value="">Velg prosjekt&#8230;</option></select></div>
+        <div class="field"><label>Beskrivelse</label><input id="man-desc" placeholder="Hva jobbet du med?"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <div class="field"><label>Dato</label><input id="man-date" type="date"></div>
+          <div class="field"><label>Inn</label><input id="man-inn" type="time" placeholder="08:30"></div>
+          <div class="field"><label>Ut</label><input id="man-ut" type="time" placeholder="16:30"></div>
+        </div>
+        <button class="big-btn yellow" onclick="addManualEntry()">+ Legg til</button>
+      </div>
+      <div class="section-label">&#128197; I dag <span id="today-hours-total" style="color:var(--pink-dark);font-size:12px;margin-left:4px"></span></div>
+      <div class="card" id="today-entries"></div>
+      <div class="section-label" style="margin-top:.25rem">&#128200; Ukeoversikt <span id="week-hours-total" style="color:var(--pink-dark);font-size:12px;margin-left:4px"></span></div>
+      <div class="card-pad" id="week-summary"></div>
+      <div class="section-label" style="margin-top:.25rem">&#128196; Alle oppf&#248;ringer
+        <button onclick="exportTimeCSV()" style="margin-left:auto;background:var(--yellow);border:1px solid var(--yellow-mid);border-radius:7px;padding:3px 10px;font-size:11px;color:var(--yellow-text);cursor:pointer;font-weight:700;font-family:var(--font)">&#8681; CSV</button>
+      </div>
+      <div class="card" id="all-entries"></div>
+    </div>
 
 
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-:root{
-  --bg:#FFFFFA;--surface:#FFFCE8;--surface2:#FFF4E0;--border:#D4B896;
-  --text:#2C1F1A;--muted:#7A5C4A;
-  --pink:#f7c5d5;--pink-mid:#e89ab5;--pink-dark:#c4608a;--pink-text:#8c2d56;
-  --yellow:#fef5c4;--yellow-mid:#f5e080;--yellow-text:#6e5000;
-  --green:#b8e8c8;--green-text:#2d6e50;
-  --red:#ffd5d5;--red-text:#8c2d2d;
-  --nav-h:64px;
-  --font:'Manjari',system-ui,sans-serif
-}
-html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--bg);letter-spacing:0.01em}
-.app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;position:relative}
-.header{background:#FFF0E8;border-bottom:1.5px solid #e8bfcc;padding:.75rem 1rem .65rem;flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
-.header-left{display:flex;flex-direction:column;gap:1px}
-.day-label{font-size:10px;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;font-weight:700}
-.header-title{font-size:18px;font-weight:700;color:var(--text)}
-.header-right{display:flex;align-items:center;gap:8px}
-.streak-row{display:flex;gap:4px}
-.streak-dot{width:8px;height:8px;border-radius:50%;background:var(--surface2);border:1px solid var(--border)}
-.streak-dot.done{background:var(--pink-dark)}
-.sync-dot{width:9px;height:9px;border-radius:50%;background:var(--border)}
-.sync-dot.ok{background:#52c77f}.sync-dot.syncing{background:#f5c842;animation:pulse .8s infinite alternate}.sync-dot.off{background:var(--border)}
-@keyframes pulse{from{opacity:.5}to{opacity:1}}
-.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:.875rem .875rem calc(var(--nav-h) + env(safe-area-inset-bottom) + .875rem)}
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:calc(var(--nav-h) + env(safe-area-inset-bottom));background:#FFF0E8;border-top:1.5px solid #e8bfcc;display:flex;align-items:flex-start;z-index:20;padding-top:4px}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;padding:.5rem 0;border:none;background:none;font-family:var(--font);color:var(--muted);transition:color .12s}
-.nav-item.active{color:var(--yellow-text)}
-.nav-icon{font-size:20px;line-height:1}
-.nav-label{font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
-.page{display:none}.page.active{display:block}
-.section-label{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:.6rem;display:flex;align-items:center;gap:5px}
-.card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1rem}
-.card-pad{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:1rem}
-.banner{display:flex;align-items:center;justify-content:space-between;padding:.625rem .875rem;border-radius:10px;margin-bottom:.875rem;font-size:12px;font-weight:700}
-.banner.connected{background:var(--green);color:var(--green-text)}
-.banner.disconnected{background:var(--red);color:var(--red-text)}
-.banner.syncing{background:var(--yellow);color:var(--yellow-text)}
-.task-item{display:flex;align-items:center;gap:10px;padding:.875rem 1rem;border-bottom:1px solid var(--border);min-height:58px}
-.task-item:last-of-type{border-bottom:none}
-.task-item.done .task-text{text-decoration:line-through;color:var(--muted)}
-.check{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .15s;font-size:14px}
-.task-item.done .check{background:var(--green);border-color:var(--green-text)}
-.task-num{font-size:12px;font-weight:700;color:var(--pink-dark);width:16px;text-align:center;flex-shrink:0}
-.task-text{font-size:15px;color:var(--text);flex:1;line-height:1.35;font-family:var(--font)}
-.task-color{width:5px;align-self:stretch;border-radius:3px;flex-shrink:0;cursor:pointer;min-height:32px}
-.task-color.c0{background:var(--border)}.task-color.c1{background:#f7c5d5}.task-color.c2{background:#fdeea3}.task-color.c3{background:#b8e8c8}.task-color.c4{background:#b8d4f8}.task-color.c5{background:#e2b8f8}
-.recur-badge{font-size:10px;background:var(--pink);color:var(--pink-text);border-radius:20px;padding:2px 7px;flex-shrink:0;font-weight:700}
-.focus-play{background:none;border:none;cursor:pointer;padding:8px;color:var(--pink-dark);font-size:20px;line-height:1;border-radius:8px;flex-shrink:0}
-.add-row{display:flex;gap:8px;padding:.75rem 1rem;border-top:1px solid var(--border)}
-.add-row input{flex:1;background:transparent;border:none;outline:none;font-size:15px;color:var(--text);font-family:var(--font)}
-.add-row input::placeholder{color:var(--muted)}
-.add-btn{background:var(--pink);border:1px solid var(--pink-mid);border-radius:8px;padding:7px 16px;font-size:20px;color:var(--pink-text);cursor:pointer;font-weight:700;line-height:1}
-.pomo-mode-row{display:flex;gap:0;margin-bottom:1rem;background:var(--surface2);border-radius:10px;padding:3px;position:relative}
-.pomo-mode{flex:1;padding:.55rem;font-size:12px;border:none;border-radius:8px;background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font);font-weight:700;transition:color .2s ease;position:relative;z-index:1}
-.pomo-mode.active{color:var(--pink-text)}
-.pomo-mode-slider{position:absolute;top:3px;bottom:3px;border-radius:7px;background:var(--pink);border:1.5px solid var(--pink-mid);transition:left .22s cubic-bezier(.4,0,.2,1),width .22s cubic-bezier(.4,0,.2,1);pointer-events:none;z-index:0}
-.pomo-timer-big{font-size:56px;font-weight:100;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-bottom:.25rem;text-align:center}
-.pomo-label{font-size:13px;color:var(--muted);margin-bottom:1.25rem;text-align:center;font-family:var(--font)}
-.pomo-btns{display:flex;gap:10px;justify-content:center;margin-bottom:1rem}
-.pomo-btn{padding:.75rem 1.75rem;border:1.5px solid var(--border);border-radius:12px;font-size:15px;color:var(--muted);cursor:pointer;background:var(--surface2);font-family:var(--font);font-weight:700;min-width:90px}
-.pomo-btn.start{background:var(--yellow);border-color:var(--yellow-mid);color:var(--yellow-text)}
-.pomo-dots{display:flex;gap:8px;justify-content:center}
-.pomo-dot{width:10px;height:10px;border-radius:50%;background:var(--surface2);border:1px solid var(--border)}
-.pomo-dot.done{background:var(--pink-dark)}
-.mood-row{display:flex;gap:6px;justify-content:space-between;margin-bottom:.75rem}
-.mood-btn{flex:1;padding:.75rem .25rem;border:1.5px solid var(--border);border-radius:12px;font-size:22px;cursor:pointer;background:var(--surface);text-align:center;transition:all .12s;line-height:1;min-height:56px}
-.mood-btn.selected{border-color:var(--pink-dark);background:var(--pink)}
-.mood-history{display:flex;gap:6px;flex-wrap:wrap}
-.mood-chip{font-size:12px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--muted);font-family:var(--font)}
-.week-days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
-.week-day-lbl{font-size:9px;font-weight:700;text-align:center;color:var(--muted);text-transform:uppercase;padding:3px 0}
-.week-day.today .week-day-lbl{color:var(--pink-text)}
-.week-day-col{min-height:52px;background:var(--surface2);border-radius:6px;padding:3px;cursor:pointer;display:flex;flex-direction:column;gap:2px;position:relative}
-.week-day.today .week-day-col{background:var(--pink);border:1.5px solid var(--pink-mid)}
-.week-date-n{font-size:9px;color:var(--muted);text-align:right}
-.week-day.today .week-date-n{color:var(--pink-text);font-weight:700}
-.week-ev{font-size:8px;background:var(--yellow);color:var(--yellow-text);border-radius:3px;padding:1px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
-.cal-month-lbl{font-size:15px;font-weight:700;color:var(--text)}
-.cal-nav{background:none;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;color:var(--muted);font-size:18px;padding:5px 14px;line-height:1;font-family:var(--font)}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
-.cal-dname{font-size:9px;font-weight:700;text-align:center;color:var(--muted);padding:3px 0;text-transform:uppercase}
-.cal-day{height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text);cursor:pointer;position:relative;transition:background .1s;font-family:var(--font)}
-.cal-day:active{background:var(--surface2)}
-.cal-day.today{background:var(--pink);color:var(--pink-text);font-weight:700;border:1.5px solid var(--pink-mid)}
-.cal-day.has-event::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--pink-dark)}
-.cal-day.empty{cursor:default;color:var(--muted);opacity:.4}
-.parking-header{padding:.875rem 1rem;border-bottom:1px solid var(--border);background:var(--yellow);border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:center}
-.parking-title{font-size:13px;font-weight:700;color:var(--yellow-text)}
-.parking-sub{font-size:10px;color:var(--yellow-text);opacity:.7}
-#parking-pad{width:100%;background:transparent;border:none;outline:none;resize:none;font-size:15px;color:var(--text);padding:1rem;min-height:100px;font-family:var(--font);line-height:1.7}
-#parking-pad::placeholder{color:var(--muted)}
-.project-item{padding:.875rem 1rem;border-bottom:1px solid var(--border)}
-.project-item:last-of-type{border-bottom:none}
-.project-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
-.project-name{font-size:15px;font-weight:700;color:var(--text);flex:1;margin-right:.5rem}
-.project-pct{font-size:13px;color:var(--pink-dark);font-weight:700}
-.pct-controls{display:flex;align-items:center;gap:8px}
-.pct-btn{width:34px;height:34px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface2);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;color:var(--muted);line-height:1;font-family:var(--font)}
-.pct-btn:active{background:var(--pink);border-color:var(--pink-mid);color:var(--pink-text)}
-.progress-bg{height:9px;background:var(--surface2);border-radius:20px;overflow:hidden}
-.progress-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--pink-mid),var(--pink-dark));transition:width .35s ease}
-.project-add{display:flex;gap:8px;padding:.875rem 1rem;border-top:1px solid var(--border)}
-.project-add input{flex:1;background:transparent;border:none;outline:none;font-size:15px;color:var(--text);font-family:var(--font)}
-.project-add input::placeholder{color:var(--muted)}
-.field{margin-bottom:.875rem}
-.field label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:.35rem}
-.field input,.field textarea,.field select{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:.75rem .875rem;font-size:15px;font-family:var(--font);color:var(--text);background:var(--bg);outline:none;resize:none;-webkit-appearance:none}
-.field textarea{min-height:72px;line-height:1.5}
-.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--pink-mid)}
-.big-btn{width:100%;padding:.9rem;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);border:1.5px solid;-webkit-appearance:none}
-.big-btn.yellow{background:var(--yellow);border-color:var(--yellow-mid);color:var(--yellow-text)}
-.big-btn.pink{background:var(--pink);border-color:var(--pink-mid);color:var(--pink-text)}
-.big-btn:active{filter:brightness(.94)}
-.saved-item{background:var(--surface2);border-radius:12px;padding:.875rem;margin-bottom:.625rem;cursor:pointer}
-.saved-item:active{background:var(--pink)}
-.si-title{font-size:14px;font-weight:700;color:var(--text)}
-.si-meta{font-size:11px;color:var(--muted);margin-top:2px}
-.retro-tabs{display:flex;gap:0;margin-bottom:1rem;background:var(--surface2);border-radius:12px;padding:4px;position:relative}
-.retro-tab{flex:1;padding:.6rem .5rem;border:none;border-radius:9px;font-size:12px;font-weight:700;color:var(--muted);background:transparent;cursor:pointer;font-family:var(--font);transition:color .2s ease;position:relative;z-index:1}
-.retro-tab.active{color:var(--pink-text)}
-.retro-tab-slider{position:absolute;top:4px;bottom:4px;border-radius:8px;background:var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.1);transition:left .22s cubic-bezier(.4,0,.2,1),width .22s cubic-bezier(.4,0,.2,1);pointer-events:none;z-index:0}
-.retro-period-lbl{font-size:12px;color:var(--muted);font-weight:700;margin-bottom:.875rem}
-.retro-q{font-size:14px;font-weight:700;color:var(--text);margin-bottom:.4rem}
-.retro-a{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:.75rem .875rem;font-size:14px;font-family:var(--font);color:var(--text);background:var(--bg);outline:none;resize:none;line-height:1.5;-webkit-appearance:none}
-.retro-a:focus{border-color:var(--pink-mid)}
-.retro-block{margin-bottom:1rem}
-.retro-entry{background:var(--surface2);border-radius:10px;padding:.875rem;margin-bottom:.625rem;font-size:12px;color:var(--muted);line-height:1.6;font-family:var(--font)}
-.retro-entry strong{color:var(--text);display:block;margin-bottom:.25rem;font-size:13px;font-weight:700}
-.energy-stars{display:flex;gap:8px;padding:.25rem 0}
-.energy-star{font-size:24px;cursor:pointer;opacity:.35;transition:opacity .12s,transform .12s}
-.energy-star.active{opacity:1;transform:scale(1.15)}
-.energy-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:.875rem}
-.energy-col{display:flex;flex-direction:column;align-items:center;gap:4px}
-.energy-day-lbl{font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase}
-.energy-slots{display:flex;flex-direction:column;gap:3px;width:100%}
-.energy-slot{height:28px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .1s}
-.energy-slot:active{transform:scale(.93)}
-.energy-slot.e1{background:#fdeea3;border-color:#f0d060}
-.energy-slot.e2{background:#f7c5d5;border-color:#e89ab5}
-.energy-slot.e3{background:#c4608a;border-color:#8c2d56}
-.energy-slot-lbl{font-size:8px;color:var(--muted)}
-.energy-slot.e3 .energy-slot-lbl{color:#fff}
-.energy-legend{display:flex;gap:10px;font-size:11px;color:var(--muted);justify-content:center;margin-bottom:.875rem;flex-wrap:wrap}
-.energy-legend-item{display:flex;align-items:center;gap:4px}
-.energy-legend-dot{width:9px;height:9px;border-radius:50%}
-.insight-box{background:var(--yellow);border-radius:12px;padding:.875rem;font-size:13px;color:var(--yellow-text);line-height:1.7;margin-bottom:1rem;font-family:var(--font)}
-.sheets-cfg{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:1rem}
-.sheets-cfg label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:.4rem}
-.sheets-cfg input{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:.75rem .875rem;font-size:14px;font-family:var(--font);color:var(--text);background:var(--bg);outline:none;margin-bottom:.875rem;-webkit-appearance:none}
-.sheets-cfg input:focus{border-color:var(--pink-mid)}
-.cfg-btns{display:flex;gap:8px}
-.cfg-btn{flex:1;padding:.8rem;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);border:1.5px solid;-webkit-appearance:none}
-.cfg-btn.primary{background:var(--pink);border-color:var(--pink-mid);color:var(--pink-text)}
-.cfg-btn.secondary{background:var(--surface2);border-color:var(--border);color:var(--muted)}
-.steps-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:1rem;font-size:13px;color:var(--muted);line-height:2;margin-bottom:1rem;font-family:var(--font)}
-.steps-card b{color:var(--text)}
-code{background:var(--surface2);padding:2px 6px;border-radius:5px;font-size:12px}
-.warn-box{background:var(--yellow);border-radius:10px;padding:.75rem;color:var(--yellow-text);margin-top:.875rem;font-size:12px;line-height:1.6}
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
-.stat-box{background:var(--surface2);border-radius:12px;padding:1rem .875rem;text-align:center}
-.stat-num{font-size:32px;font-weight:700;color:var(--pink-dark);line-height:1;margin-bottom:4px}
-.stat-lbl{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
-.hm-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:.75rem}
-.hm-day-labels{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px}
-.hm-dlbl{font-size:9px;text-align:center;color:var(--muted);font-weight:700;text-transform:uppercase}
-.hm-cell{height:34px;border-radius:7px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);font-weight:700}
-.hm-cell.h1{background:#fdeea3;border-color:#f0d060;color:var(--yellow-text)}
-.hm-cell.h2{background:#f7c5d5;border-color:#e89ab5;color:var(--pink-text)}
-.hm-cell.h3{background:#c4608a;border-color:#8c2d56;color:#fff}
-.mood-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.mood-bar-lbl{font-size:14px;width:24px;text-align:center;flex-shrink:0}
-.mood-bar-bg{flex:1;height:10px;background:var(--surface2);border-radius:20px;overflow:hidden}
-.mood-bar-fill{height:100%;background:linear-gradient(90deg,var(--pink-mid),var(--pink-dark));border-radius:20px}
-.mood-bar-count{font-size:11px;color:var(--muted);min-width:20px;text-align:right}
-.today-meetings{background:var(--pink);border:1.5px solid var(--pink-mid);border-radius:14px;padding:.875rem 1rem;margin-bottom:1rem}
-.today-meetings-hdr{font-size:11px;font-weight:700;color:var(--pink-text);margin-bottom:.625rem;text-transform:uppercase;letter-spacing:.06em}
-.today-m-item{display:flex;align-items:center;gap:10px;padding:.4rem 0;border-bottom:1px solid rgba(196,96,138,.2)}
-.today-m-item:last-child{border-bottom:none}
-.today-m-name{font-size:14px;color:var(--pink-text);flex:1;font-family:var(--font)}
-/* TIMEFØRING */
-.timer-widget{background:var(--surface)}
-.timer-project-row{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
-.timer-sel{flex:1;min-width:120px;border:1.5px solid var(--border);border-radius:10px;padding:.65rem .875rem;font-size:14px;font-family:var(--font);color:var(--text);background:var(--bg);outline:none;-webkit-appearance:none;cursor:pointer}
-.timer-sel:focus{border-color:var(--pink-mid)}
-.timer-task-input{flex:2;min-width:140px;border:1.5px solid var(--border);border-radius:10px;padding:.65rem .875rem;font-size:14px;font-family:var(--font);color:var(--text);background:var(--bg);outline:none;-webkit-appearance:none}
-.timer-task-input:focus{border-color:var(--pink-mid)}
-.timer-display-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.timer-live-display{font-size:44px;font-weight:100;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-.timer-live-display.running{color:var(--pink-dark)}
-.timer-btn-col{display:flex;gap:8px;flex-direction:column}
-.timer-action-btn{padding:.6rem 1.25rem;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);border:1.5px solid;white-space:nowrap}
-.timer-action-btn.go{background:var(--green);border-color:var(--green-text);color:var(--green-text)}
-.timer-action-btn.go.active{background:#c4608a;border-color:#8c2d56;color:#fff}
-.timer-action-btn.log{background:var(--surface2);border-color:var(--border);color:var(--muted)}
-.entry-item{display:flex;align-items:center;gap:10px;padding:.75rem 1rem;border-bottom:1px solid var(--border)}
-.entry-item:last-of-type{border-bottom:none}
-.entry-color{width:5px;align-self:stretch;border-radius:3px;flex-shrink:0;min-height:28px}
-.entry-info{flex:1;min-width:0}
-.entry-proj{font-size:12px;font-weight:700;color:var(--pink-dark)}
-.entry-desc{font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.entry-date{font-size:10px;color:var(--muted)}
-.entry-hours{font-size:15px;font-weight:700;color:var(--text);flex-shrink:0}
-.entry-del{background:none;border:none;cursor:pointer;font-size:16px;color:var(--muted);padding:4px;flex-shrink:0}
-.week-proj-row{display:flex;align-items:center;gap:10px;margin-bottom:.625rem}
-.week-proj-name{font-size:13px;font-weight:700;color:var(--text);flex:1}
-.week-proj-hours{font-size:13px;font-weight:700;color:var(--pink-dark);flex-shrink:0;min-width:42px;text-align:right}
-.week-proj-bar-bg{flex:2;height:8px;background:var(--surface2);border-radius:20px;overflow:hidden}
-.week-proj-bar-fill{height:100%;border-radius:20px}
-.empty-entries{padding:1rem;font-size:13px;color:var(--muted);text-align:center;font-family:var(--font)}
-/* MODAL */
-.modal-bg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(58,53,64,.5);z-index:100;align-items:flex-end;justify-content:center}
-.modal-bg.show{display:flex}
-.modal{background:var(--surface);border-radius:20px 20px 0 0;padding:1.25rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom));width:100%;max-width:480px}
-.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto .875rem}
-.modal h3{font-size:17px;font-weight:700;color:var(--text);margin-bottom:.25rem;font-family:var(--font)}
-.modal-date{font-size:12px;color:var(--muted);margin-bottom:1rem}
-.modal input,.modal textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:.75rem .875rem;font-size:16px;font-family:var(--font);color:var(--text);background:var(--bg);outline:none;margin-bottom:.75rem;-webkit-appearance:none}
-.modal textarea{min-height:80px;resize:none}
-.modal input:focus,.modal textarea:focus{border-color:var(--pink-mid)}
-.modal-btns{display:flex;gap:10px}
-.modal-btn{flex:1;padding:.9rem;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);border:1.5px solid;-webkit-appearance:none}
-.modal-btn.save{background:var(--pink);border-color:var(--pink-mid);color:var(--pink-text)}
-.modal-btn.cancel{background:var(--surface2);border-color:var(--border);color:var(--muted)}
-.ev-popup{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--surface);border-radius:18px;padding:1.5rem;width:88%;max-width:320px;z-index:300;box-shadow:0 10px 40px rgba(0,0,0,.2)}
-.ev-popup.show{display:block}
-.ev-popup h4{font-size:16px;font-weight:700;color:var(--text);margin-bottom:.5rem;font-family:var(--font)}
-.ev-popup p{font-size:14px;color:var(--muted);margin-bottom:1.25rem;line-height:1.5}
-.ev-popup-close{width:100%;padding:.8rem;border-radius:10px;background:var(--surface2);border:1.5px solid var(--border);color:var(--muted);font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font)}
-.focus-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:200;flex-direction:column;padding:1.5rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom));overflow-y:auto}
-.focus-overlay.show{display:flex}
-.focus-back{background:none;border:none;font-size:15px;color:var(--muted);cursor:pointer;font-family:var(--font);margin-bottom:2rem;display:flex;align-items:center;gap:6px;padding:0}
-.focus-eyebrow{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--pink-dark);margin-bottom:.5rem}
-.focus-task-name{font-size:22px;font-weight:700;color:var(--text);margin-bottom:.375rem;line-height:1.3;font-family:var(--font)}
-.focus-sub{font-size:14px;color:var(--muted);margin-bottom:2rem}
-.focus-timer{font-size:80px;font-weight:100;color:var(--text);letter-spacing:-.02em;margin-bottom:.875rem;font-variant-numeric:tabular-nums;text-align:center}
-.focus-btn-row{display:flex;gap:10px;margin-bottom:2rem}
-.focus-start{flex:2;padding:1.125rem;background:var(--yellow);border:1.5px solid var(--yellow-mid);border-radius:14px;font-size:17px;font-weight:700;color:var(--yellow-text);cursor:pointer;font-family:var(--font)}
-.focus-reset{flex:1;padding:1.125rem;background:var(--surface2);border:1.5px solid var(--border);border-radius:14px;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;font-family:var(--font)}
-.focus-done{width:100%;padding:1.2rem;background:var(--green);border:1.5px solid var(--green-text);border-radius:14px;font-size:18px;font-weight:700;color:var(--green-text);cursor:pointer;font-family:var(--font);margin-bottom:.875rem}
-.focus-not-done{background:none;border:none;font-size:14px;color:var(--muted);cursor:pointer;font-family:var(--font);text-align:center;width:100%;padding:.5rem}
-/* DESKTOP */
-@media(min-width:768px){
-  html,body{overflow:auto}
-  .app{max-width:100%;height:100vh;display:grid;grid-template-columns:220px 1fr;grid-template-rows:auto auto 1fr;grid-template-areas:"sidebar header" "sidebar nb-sub" "sidebar main"}
-  .bottom-nav{display:none}
-  .header{grid-area:header;border-left:none;padding:.875rem 1.5rem;background:#FFF0E8;border-bottom:1.5px solid #e8bfcc}
-  .nb-subheader{grid-area:nb-sub;padding:.5rem 1.5rem 0;background:#FFF0E8}
-  .desktop-sidebar{grid-area:sidebar;background:#FFF0E8;border-right:1.5px solid #f0d5e0;display:flex;flex-direction:column;padding:1.25rem .75rem;gap:4px;overflow-y:auto;overflow-x:hidden;height:100%}
-  .sidebar-logo{font-size:16px;font-weight:700;color:var(--pink-text);padding:.5rem .75rem 1.25rem;border-bottom:1px solid var(--border);margin-bottom:.75rem;display:flex;align-items:center;gap:8px}
-  .sidebar-btn{display:flex;align-items:center;gap:10px;padding:.75rem .875rem;border-radius:10px;border:none;background:transparent;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;font-family:var(--font);text-align:left;width:100%;transition:all .12s}
-  .sidebar-btn:hover{background:transparent;color:var(--text);font-size:14.5px}
-  .sidebar-btn.active{background:var(--yellow);color:var(--yellow-text);border:1px solid var(--yellow-mid)}
-  .sidebar-icon{font-size:18px;width:24px;text-align:center;flex-shrink:0}
-  .scroll-area{grid-area:main;padding:1.5rem 2rem 2rem;max-width:900px;overflow-y:auto;height:100%}
-  .desktop-cols{display:grid;grid-template-columns:1fr 280px;gap:1.5rem;align-items:start}
-  .desktop-main,.desktop-side{display:flex;flex-direction:column;gap:1rem}
-  .stat-grid{grid-template-columns:repeat(4,1fr)}
-  .pomo-timer-big{font-size:44px}
-}
-.desktop-sidebar{display:none}
-@media(min-width:768px){.desktop-sidebar{display:flex}}
+    <!-- NOTATER & RUTINER -->
+    <div class="page" id="page-notater">
 
-.sidebar-section-hdr{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:.5rem .875rem .25rem;margin-top:.25rem}
+      <div id="nb-content"></div>
 
-.mobile-nav-section{display:flex;flex:1}
-.mobile-nav-section .nav-item{flex:1}
-.nav-section-switcher{display:flex;flex-direction:column;justify-content:center;gap:3px;padding:4px 6px;border-left:1px solid var(--border);flex-shrink:0}
-.section-switch-btn{padding:3px 8px;border-radius:7px;border:1px solid var(--border);background:transparent;font-size:9px;font-weight:700;color:var(--muted);cursor:pointer;font-family:var(--font);white-space:nowrap;transition:background .2s ease,color .2s ease,border-color .2s ease}
-.section-switch-btn.active{background:var(--pink);border-color:var(--pink-mid);color:var(--pink-text)}
+    </div>
 
-/* SIDEBAR DROPDOWN */
-.sidebar-group-btn{display:flex;align-items:center;gap:10px;padding:.75rem .875rem;border-radius:10px;border:1px solid var(--yellow-mid);background:var(--yellow);font-size:14px;font-weight:700;color:var(--yellow-text);cursor:pointer;font-family:var(--font);width:100%;margin-bottom:2px}
-.sb-chevron{margin-left:auto;font-size:14px;transition:transform .2s;display:inline-block}
-.sb-chevron.open{transform:rotate(180deg)}
-.sb-children{display:flex;flex-direction:column;gap:2px;overflow:hidden;max-height:600px;transition:max-height .28s cubic-bezier(.4,0,.2,1),opacity .2s ease}
-.sb-children.collapsed{max-height:0;opacity:0;pointer-events:none}
-.sb-children:not(.collapsed){opacity:1}
-.sidebar-sub{padding-left:1.75rem !important}
-/* QUICKLINK */
-.sidebar-quicklink{display:flex;align-items:center;gap:10px;padding:.75rem .875rem;border-radius:10px;font-size:14px;font-weight:700;color:var(--muted);text-decoration:none;margin-top:.5rem;border:1.5px dashed var(--border);transition:all .15s}
-.sidebar-quicklink:hover{background:var(--surface2);color:var(--text);border-color:var(--pink-mid)}
-.nav-quicklink{text-decoration:none;color:var(--muted);border-left:1px solid var(--border)}
-.nav-quicklink:hover,.nav-quicklink.active{color:var(--yellow-text)}
+    <!-- DASHBOARD -->
+    <div class="page" id="page-dashboard">
+      <div id="dashboard-greeting" style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:1.25rem;font-family:var(--font)"></div>
+      <div class="stat-grid" id="dashboard-stats" style="margin-bottom:1rem"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <div class="section-label">&#11088; Dagens oppgaver</div>
+          <div class="card" id="dash-tasks"></div>
+        </div>
+        <div>
+          <div class="section-label">&#128197; Neste hendelser</div>
+          <div class="card" id="dash-events"></div>
+        </div>
+      </div>
+      <div class="section-label" style="margin-top:1rem">&#9201; Timer logget i dag</div>
+      <div class="card-pad" id="dash-timer"></div>
+      <div class="section-label" style="margin-top:.5rem">&#128512; Hum&#248;r siste 7 dager</div>
+      <div class="card-pad" id="dash-mood"></div>
+    </div>
 
-/* MATRISE */
-.matrise-quad{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:.75rem;display:flex;flex-direction:column;overflow:hidden;transition:border-color .15s}
-.matrise-quad:hover{border-color:var(--pink-mid)}
-#mq-do{border-color:#f7c5d5;background:#fff8fa}
-#mq-plan{border-color:#b8e8c8;background:#f5fff8}
-#mq-delegate{border-color:#fef5c4;background:#fffdf0}
-#mq-drop{border-color:#e0dae0;background:var(--surface2)}
-.mq-label{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px}
-.mq-sub{font-size:10px;color:var(--muted);margin-bottom:.5rem;font-style:italic}
-.mq-items{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
-.mq-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:5px 8px;font-size:12px;color:var(--text);cursor:grab;display:flex;align-items:center;justify-content:space-between;gap:4px;font-family:var(--font);transition:transform .1s,box-shadow .1s}
-.mq-item:active{cursor:grabbing;transform:scale(1.03);box-shadow:0 4px 12px rgba(0,0,0,.12)}
-.mq-item.drag-over{border-color:var(--pink-mid)}
-.matrise-quad.drag-target{border-style:dashed;border-color:var(--pink-dark)}
-/* CONFETTI */
-.confetti-piece{position:fixed;width:8px;height:8px;border-radius:2px;pointer-events:none;z-index:9999;animation:confettiFall 1.4s ease-in forwards}
-@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
-/* RICH EDITOR */
-.rich-editor-wrap{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;overflow:hidden}
-.rich-toolbar{display:flex;gap:2px;padding:.5rem .75rem;border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center;background:var(--surface2)}
-.rtb{background:none;border:none;border-radius:6px;padding:4px 7px;font-size:13px;cursor:pointer;color:var(--text);font-family:var(--font);transition:background .12s,transform .1s}
-.rtb:hover{background:var(--pink);color:var(--pink-text)}
-.rtb:active{transform:scale(.9)}
-.rtb.active{background:var(--pink);color:var(--pink-text)}
-.rtb-sep{width:1px;height:18px;background:var(--border);margin:0 4px;flex-shrink:0}
-.rich-editor{min-height:200px;padding:1rem;outline:none;font-size:14px;font-family:var(--font);line-height:1.8;color:var(--text);overflow-y:auto}
-.rich-editor:empty:before{content:attr(data-placeholder);color:var(--muted);pointer-events:none}
-.rich-editor ul{padding-left:1.5rem;margin:.25rem 0}
-.rich-editor ol{padding-left:1.5rem;margin:.25rem 0}
-.rich-editor img{max-width:100%;border-radius:8px;margin:.5rem 0;display:block}
-.rich-editor .file-attach{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:12px;color:var(--text);margin:.25rem 0;cursor:pointer;text-decoration:none}
-.rich-stats{font-size:11px;color:var(--muted);padding:.4rem .875rem;border-top:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.rich-dragover{background:var(--yellow) !important;border-color:var(--yellow-mid) !important}
-.search-bar{display:flex;gap:6px;padding:.5rem .875rem;border-bottom:1px solid var(--border);background:var(--surface)}
-.search-bar input{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:.4rem .75rem;font-size:13px;font-family:var(--font);color:var(--text);background:var(--bg);outline:none}
-.search-bar input:focus{border-color:var(--pink-mid)}
-mark{background:#fef5c4;border-radius:2px;padding:0 1px}
-/* Tab rename */
-.nb-tab span[contenteditable]{outline:none;border-bottom:1.5px solid var(--pink-mid);min-width:20px}
-/* NOTEBOOK TABS */
-.nb-subheader{display:flex;align-items:flex-end;gap:0;border-bottom:2px solid var(--pink-mid);padding:.5rem .875rem 0;overflow-x:auto;-webkit-overflow-scrolling:touch;background:#FFF0E8;flex-shrink:0}
-.nb-tabs-wrap{display:flex;align-items:flex-end;gap:0;margin-bottom:0;border-bottom:2px solid var(--pink-mid);padding-top:.5rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.nb-tabs{display:flex;gap:4px;align-items:flex-end;flex:1;min-width:0}
-.nb-tab{padding:.5rem 1rem .6rem;border-radius:10px 10px 0 0;border:1.5px solid var(--border);border-bottom:none;background:var(--surface2);font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:var(--font);white-space:nowrap;position:relative;transition:all .12s;display:flex;align-items:center;gap:6px;flex-shrink:0}
-.nb-tab.active{background:var(--surface);color:var(--pink-text);border-color:var(--pink-mid);border-bottom:2px solid var(--surface);margin-bottom:-2px;z-index:1}
-.nb-tab-del{background:none;border:none;cursor:pointer;font-size:14px;color:var(--muted);padding:0;line-height:1;opacity:.5}
-.nb-tab-del:hover{opacity:1;color:var(--pink-dark)}
-.nb-new-tab-btn{padding:.45rem .875rem;border-radius:8px 8px 0 0;border:1.5px dashed var(--border);border-bottom:none;background:transparent;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;font-family:var(--font);flex-shrink:0;margin-bottom:-2px}
-.nb-new-tab-btn:hover{border-color:var(--pink-mid);color:var(--pink-text)}
-.nb-panel{background:var(--surface);border:1.5px solid var(--pink-mid);border-top:2px solid var(--pink-mid);border-radius:0 0 14px 14px;padding:1rem;margin-top:-2px}
-/* NOTISLAPPER */
-.notislapp{border-radius:12px;padding:.875rem;min-height:120px;display:flex;flex-direction:column;gap:6px;position:relative;border:1.5px solid rgba(0,0,0,.08)}
-.notislapp-color-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:4px}
-.notislapp-color-dot{width:16px;height:16px;border-radius:50%;cursor:pointer;border:2px solid transparent;flex-shrink:0;transition:transform .12s}
-.notislapp-color-dot.sel{border-color:rgba(0,0,0,.3);transform:scale(1.2)}
-.notislapp textarea{background:transparent;border:none;outline:none;resize:none;font-size:13px;font-family:var(--font);line-height:1.6;flex:1;color:var(--text);min-height:70px}
-.notislapp-del{position:absolute;top:6px;right:8px;background:none;border:none;font-size:16px;cursor:pointer;opacity:.4;line-height:1;padding:0}
-.notislapp-del:hover{opacity:.8}
+    <!-- PRIORITERINGSMATRISE -->
+    <div class="page" id="page-matrise">
+      <div class="section-label">&#127919; Prioriteringsmatrise</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:1rem">Dra oppgaver inn i riktig kvadrant. Dobbeltklikk for &#229; legge til ny.</p>
+      <div id="matrise-grid" style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:8px;height:420px">
+        <div class="matrise-quad" id="mq-do" data-q="do">
+          <div class="mq-label">&#128293; Gj&#248;r n&#229;</div>
+          <div class="mq-sub">Haster + viktig</div>
+          <div class="mq-items" id="mqi-do"></div>
+        </div>
+        <div class="matrise-quad" id="mq-plan" data-q="plan">
+          <div class="mq-label">&#128197; Planlegg</div>
+          <div class="mq-sub">Ikke haster + viktig</div>
+          <div class="mq-items" id="mqi-plan"></div>
+        </div>
+        <div class="matrise-quad" id="mq-delegate" data-q="delegate">
+          <div class="mq-label">&#128101; Deleger</div>
+          <div class="mq-sub">Haster + ikke viktig</div>
+          <div class="mq-items" id="mqi-delegate"></div>
+        </div>
+        <div class="matrise-quad" id="mq-drop" data-q="drop">
+          <div class="mq-label">&#128465;&#65039; Dropp</div>
+          <div class="mq-sub">Ikke haster + ikke viktig</div>
+          <div class="mq-items" id="mqi-drop"></div>
+        </div>
+      </div>
+    </div>
 
-/* ══════════════════════════════
-   SMOOTH TRANSITIONS & ANIMATIONS
-══════════════════════════════ */
+    <!-- ENERGI + INNSTILLINGER -->
+    <div class="page" id="page-mer">
+      <div class="section-label">&#9889; Energisporingslogg</div>
+      <div class="card-pad">
+        <p style="font-size:12px;color:var(--muted);margin-bottom:.875rem">Trykk for &#229; registrere energiniv&#229; per tidsblokk.</p>
+        <div class="energy-grid" id="energy-grid"></div>
+        <div class="energy-legend">
+          <div class="energy-legend-item"><div class="energy-legend-dot" style="background:var(--surface2);border:1px solid var(--border)"></div><span>Tom</span></div>
+          <div class="energy-legend-item"><div class="energy-legend-dot" style="background:#fdeea3"></div><span>Lav</span></div>
+          <div class="energy-legend-item"><div class="energy-legend-dot" style="background:#f7c5d5"></div><span>Middels</span></div>
+          <div class="energy-legend-item"><div class="energy-legend-dot" style="background:#c4608a"></div><span>H&#248;y</span></div>
+        </div>
+      </div>
+      <div id="energy-insight" class="insight-box"></div>
+      <div class="section-label">&#9881;&#65039; Google Sheets</div>
+      <div id="banner-settings"></div>
+      <div class="sheets-cfg">
+        <label>Web App URL</label>
+        <input id="sheets-url" placeholder="https://script.google.com/macros/s/&#8230;/exec" type="url" inputmode="url">
+        <div class="cfg-btns">
+          <button class="cfg-btn primary" onclick="saveConfig()">Lagre og test</button>
+          <button class="cfg-btn secondary" onclick="clearConfig()">Nullstill</button>
+        </div>
+      </div>
+      <div class="steps-card">
+        <b style="display:block;margin-bottom:.5rem">Koble til Sheets:</b>
+        1. Extensions &#8594; Apps Script &#8594; lim inn .js-filen<br>
+        2. Kj&#248;r <code>initAllSheets</code><br>
+        3. Deploy &#8594; Web app &#8594; Anyone<br>
+        4. Kopier URL og lim inn over
+        <div class="warn-box">&#9888;&#65039; Uten tilkobling lagres alt lokalt i nettleseren.</div>
+      </div>
+    </div>
 
-/* Page fade-in animation */
-.page{display:none}
-.page.active{display:block;animation:pageIn .12s ease}
-@keyframes pageIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+    <!-- STATS -->
+    <div class="page" id="page-stats">
+      <div class="section-label">&#128200; Oversikt</div>
+      <div class="stat-grid" id="stats-boxes"></div>
+      <div class="section-label">&#128293; Fullf&#248;ringsheatmap</div>
+      <div class="card-pad">
+        <div class="hm-day-labels" id="hm-day-labels"></div>
+        <div class="hm-grid" id="hm-grid"></div>
+        <div style="display:flex;gap:10px;font-size:10px;color:var(--muted);justify-content:center;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:3px"><div style="width:10px;height:10px;border-radius:3px;background:var(--surface2);border:1px solid var(--border)"></div>0</div>
+          <div style="display:flex;align-items:center;gap:3px"><div style="width:10px;height:10px;border-radius:3px;background:#fdeea3"></div>1</div>
+          <div style="display:flex;align-items:center;gap:3px"><div style="width:10px;height:10px;border-radius:3px;background:#f7c5d5"></div>2</div>
+          <div style="display:flex;align-items:center;gap:3px"><div style="width:10px;height:10px;border-radius:3px;background:#c4608a"></div>3+</div>
+        </div>
+      </div>
+      <div class="section-label">&#128512; Hum&#248;rtrender</div>
+      <div class="card-pad" id="mood-trend-wrap"></div>
+      <div class="section-label">&#9201; Pomodoro</div>
+      <div class="card-pad" id="pomo-stats-wrap"></div>
+    </div>
 
-/* Button press feel */
-button,a.nav-item,a.sidebar-quicklink,.mood-btn,.cal-day,.nb-tab,.saved-item,.task-item,.project-item,.entry-item,.retro-entry,.notislapp{transition:transform .1s ease,filter .1s ease,background .15s ease,border-color .15s ease,color .15s ease,opacity .15s ease}
+    <!-- HANDLELISTE -->
+    <div class="page" id="page-handel">
+      <div class="section-label">&#128722; Handleliste</div>
+      <div class="card" id="handel-list"></div>
+      <div class="section-label" style="margin-top:.5rem">&#128197; Tidligere handleturer</div>
+      <div id="handel-history" style="font-size:12px;color:var(--muted)"></div>
+    </div>
 
-button:active:not(:disabled){transform:scale(.95)}
-.add-btn:active,.big-btn:active,.cfg-btn:active,.pomo-btn:active,.timer-action-btn:active{transform:scale(.94)}
-.check:active{transform:scale(.88)}
-.mood-btn:active{transform:scale(.92)}
-.nav-item:active{transform:scale(.9)}
-.nb-tab:active{transform:scale(.96)}
-.saved-item:active{transform:scale(.98)}
+    <!-- GJ&#216;REM&#197;L HJEMME -->
+    <div class="page" id="page-hjem">
+      <div class="section-label">&#9994; Gj&#248;rem&#229;l hjemme</div>
+      <div class="card" id="hjem-list"></div>
+    </div>
 
-/* Sidebar button smooth */
-.sidebar-btn{transition:font-size .12s ease,color .15s ease,transform .1s ease}
-.sidebar-btn:active{transform:translateX(2px)}
+    <!-- VANER -->
+    <div class="page" id="page-vaner">
+      <div class="section-label">&#127775; Vaner &amp; rutiner</div>
+      <div class="card-pad" id="vaner-grid"></div>
+      <div class="section-label" style="margin-top:.5rem">+ Ny vane</div>
+      <div class="card-pad">
+        <div class="field"><label>Vanenavn</label><input id="vane-name" placeholder="F.eks. Drikk vann, Gå 10 min..."></div>
+        <div class="field"><label>Ikon (emoji)</label><input id="vane-icon" placeholder="&#128167;" maxlength="2"></div>
+        <button class="big-btn pink" onclick="addVane()">+ Legg til vane</button>
+      </div>
+    </div>
 
-/* Check animation */
-.task-item.done .check{transition:background .2s ease,border-color .2s ease,transform .15s ease}
+    <!-- TRENING -->
+    <div class="page" id="page-trening">
+      <div class="section-label">&#127947; Treningslogg</div>
+      <div class="card-pad">
+        <div class="field"><label>Aktivitet</label><input id="trening-type" placeholder="L&#248;petur, styrke, yoga..."></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="field"><label>Dato</label><input id="trening-date" type="date"></div>
+          <div class="field"><label>Varighet (min)</label><input id="trening-min" type="number" min="0" placeholder="45"></div>
+        </div>
+        <div class="field"><label>Notat</label><textarea id="trening-note" placeholder="Hvordan f&#248;ltes det?"></textarea></div>
+        <button class="big-btn yellow" onclick="addTrening()">+ Logg &#248;kt</button>
+      </div>
+      <div class="section-label" style="margin-top:.5rem">&#128197; Treningshistorikk</div>
+      <div class="card" id="trening-history"></div>
+    </div>
 
-/* Nav item active state */
-.nav-item{transition:color .15s ease,transform .1s ease}
+    <!-- MAT -->
+    <div class="page" id="page-mat">
+      <div class="section-label">&#127859; M&#229;ltidsplanlegger</div>
+      <div class="card-pad" id="mat-week"></div>
+      <div class="section-label" style="margin-top:.5rem">&#128203; Oppskriftsideer</div>
+      <div class="card" id="mat-ideas"></div>
+      <div class="card-pad">
+        <div class="field"><label>Legg til ide</label><input id="mat-idea-input" placeholder="Pastasalat, tacos, suppe..."></div>
+        <button class="big-btn yellow" onclick="addMatIdea()">+ Legg til</button>
+      </div>
+    </div>
 
-/* Card hover on desktop */
-@media(min-width:768px){
-  .saved-item:hover{transform:translateY(-1px)}
-  .notislapp:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
-  .nb-tab:hover:not(.active){background:var(--surface);color:var(--text)}
-}
+    <!-- SOSIALT -->
+    <div class="page" id="page-sosialt">
+      <div class="section-label">&#128149; Familie &amp; sosialt</div>
+      <div class="card" id="sosialt-list"></div>
+      <div class="card-pad">
+        <div class="field"><label>Ny avtale / hendelse</label><input id="sosialt-input" placeholder="Middag med familie, bursdag..."></div>
+        <div class="field"><label>Dato</label><input id="sosialt-date" type="date"></div>
+        <button class="big-btn pink" onclick="addSosialt()">+ Legg til</button>
+      </div>
+    </div>
 
-/* Streak dot pop */
-.streak-dot.done{animation:popIn .3s ease}
-@keyframes popIn{0%{transform:scale(0)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+    <!-- &#216;KONOMI -->
+    <div class="page" id="page-okonomi">
+      <div class="section-label">&#128176; &#216;konomi</div>
+      <div class="stat-grid" id="okonomi-stats"></div>
+      <div class="card-pad">
+        <div class="field"><label>Beskrivelse</label><input id="ok-desc" placeholder="F.eks. Matbutikk, Netflix..."></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <div class="field"><label>Bel&#248;p (kr)</label><input id="ok-amount" type="number" placeholder="250"></div>
+          <div class="field"><label>Type</label><select id="ok-type" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:.75rem .875rem;font-size:14px;font-family:var(--font);color:var(--text);background:var(--bg);outline:none;-webkit-appearance:none"><option value="utgift">Utgift</option><option value="inntekt">Inntekt</option></select></div>
+          <div class="field"><label>Dato</label><input id="ok-date" type="date"></div>
+        </div>
+        <button class="big-btn yellow" onclick="addOkonomi()">+ Legg til</button>
+      </div>
+      <div class="section-label" style="margin-top:.5rem">&#128203; Transaksjoner</div>
+      <div class="card" id="okonomi-list"></div>
+    </div>
 
-/* Pomo dot fill */
-.pomo-dot{transition:background .3s ease,border-color .3s ease}
-.pomo-dot.done{animation:popIn .25s ease}
+    <!-- PERSONLIGE M&#197;L -->
+    <div class="page" id="page-mal">
+      <div class="section-label">&#127919; Personlige m&#229;l</div>
+      <div class="card" id="mal-list"></div>
+      <div class="card-pad">
+        <div class="field"><label>M&#229;l</label><input id="mal-input" placeholder="F.eks. Les 12 b&#248;ker i &#229;r..."></div>
+        <div class="field"><label>Kategori</label>
+          <select id="mal-cat" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:.75rem .875rem;font-size:14px;font-family:var(--font);color:var(--text);background:var(--bg);outline:none;-webkit-appearance:none">
+            <option>Helse</option><option>Relasjoner</option><option>L&#230;ring</option><option>Fritid</option><option>&#216;konomi</option><option>Annet</option>
+          </select>
+        </div>
+        <button class="big-btn pink" onclick="addMal()">+ Legg til m&#229;l</button>
+      </div>
+    </div>
 
-/* Progress bar */
-.progress-fill{transition:width .5s cubic-bezier(.4,0,.2,1)}
-.week-proj-bar-fill{transition:width .5s cubic-bezier(.4,0,.2,1)}
+    <!-- DAGBOK -->
+    <div class="page" id="page-dagbok">
+      <div class="section-label">&#128214; Dagbok</div>
+      <div class="card-pad">
+        <div class="retro-period-lbl" id="dagbok-date-lbl"></div>
+        <textarea class="retro-a" id="dagbok-text" rows="8" placeholder="Hvordan var dagen? Tanker, f&#248;lelser, opplevelser&#8230;" style="min-height:200px"></textarea>
+        <div style="display:flex;gap:8px;margin-top:.875rem">
+          <div style="flex:1"><div class="retro-q" style="font-size:12px;margin-bottom:.5rem">Dagens stemning</div><div class="mood-row" id="dagbok-mood-row"></div></div>
+        </div>
+        <button class="big-btn pink" style="margin-top:1rem" onclick="saveDagbok()">&#128190; Lagre dagens innlegg</button>
+      </div>
+      <div class="section-label" style="margin-top:.5rem">&#128195; Tidligere innlegg</div>
+      <div id="dagbok-history"></div>
+    </div>
 
-/* Backlog/archive appear */
-#backlog-wrap,#archive-wrap{transition:opacity .2s ease}
+    <!-- FRITIDSPROSJEKTER -->
+    <div class="page" id="page-fritid">
+      <div class="section-label">&#127912; Fritidsprosjekter</div>
+      <div class="card" id="fritid-list"></div>
+      <div class="card-pad">
+        <div class="field"><label>Prosjektnavn</label><input id="fritid-input" placeholder="F.eks. Strikkeprosjekt, tegneserie..."></div>
+        <div class="field"><label>Beskrivelse</label><textarea id="fritid-desc" placeholder="Hva vil du lage?"></textarea></div>
+        <button class="big-btn yellow" onclick="addFritid()">+ Legg til prosjekt</button>
+      </div>
+    </div>
 
-/* Notebook tab underline */
-.nb-tab{transition:background .15s ease,color .15s ease,border-color .15s ease,margin-bottom .15s ease}
+  </div>
 
-/* Toast slide up */
-@keyframes slideUp{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-dag" onclick="showPage('dag',this,'sb-dag')"><div class="nav-icon">&#127968;</div><div class="nav-label">Dag</div></button>
+    <button class="nav-item" id="nav-prosjekt" onclick="showPage('prosjekt',this,'sb-prosjekt')"><div class="nav-icon">&#128202;</div><div class="nav-label">Prosjekter</div></button>
+    <button class="nav-item" id="nav-mote" onclick="showPage('mote',this,'sb-mote')"><div class="nav-icon">&#128101;</div><div class="nav-label">M&#248;te</div></button>
+    <button class="nav-item" id="nav-retro" onclick="showPage('retro',this,'sb-retro')"><div class="nav-icon">&#128260;</div><div class="nav-label">Retro</div></button>
+    <button class="nav-item" id="nav-timer" onclick="showPage('timer',this,'sb-timer')"><div class="nav-icon">&#9200;</div><div class="nav-label">Timer</div></button>
+    <a href="personal.html" class="nav-item nav-quicklink"><div class="nav-icon">&#127968;</div><div class="nav-label">Personal</div></a>
+  </nav>
+</div>
 
-/* Sidebar dropdown handled above */
+<!-- EVENT MODAL -->
+<div class="modal-bg" id="event-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>Legg til hendelse</h3>
+    <div class="modal-date" id="modal-date-label"></div>
+    <input id="event-name" placeholder="Tittel" maxlength="40">
+    <textarea id="event-desc" placeholder="Beskrivelse (valgfritt)" maxlength="120"></textarea>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeModal()">Avbryt</button>
+      <button class="modal-btn save" onclick="saveEvent()">Lagre</button>
+    </div>
+  </div>
+</div>
+<div class="ev-popup" id="ev-popup"><h4 id="ev-popup-title"></h4><p id="ev-popup-desc"></p><button class="ev-popup-close" onclick="closeEvPopup()">Lukk</button></div>
+<div id="ev-popup-bg" onclick="closeEvPopup()" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:299;background:rgba(0,0,0,.3)"></div>
+<div class="focus-overlay" id="focus-overlay">
+  <button class="focus-back" onclick="exitFocus()">&#8592; Tilbake</button>
+  <div class="focus-eyebrow">N&#229; fokuserer du p&#229;</div>
+  <div class="focus-task-name" id="focus-task-name">&#8211;</div>
+  <div class="focus-sub">Alt annet kan vente.</div>
+  <div class="focus-timer" id="focus-timer-display">25:00</div>
+  <div class="focus-btn-row">
+    <button class="focus-start" id="focus-toggle" onclick="togglePomo(true)">&#9654; Start</button>
+    <button class="focus-reset" onclick="resetPomo()">Nullstill</button>
+  </div>
+  <button class="focus-done" onclick="markFocusDone()">&#10003; Ferdig med denne!</button>
+  <button class="focus-not-done" onclick="exitFocus()">Ikke ferdig &#8211; g&#229; tilbake</button>
+</div>
 
-/* Focus overlay slide */
-.focus-overlay{transition:opacity .2s ease}
-.focus-overlay.show{animation:fadeIn .2s ease}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
-/* Modal slide up */
-.modal{animation:modalUp .22s cubic-bezier(.34,1.1,.64,1)}
-@keyframes modalUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-/* Popup center */
-.ev-popup{transition:opacity .15s ease,transform .15s ease}
-/* Retro tabs */
-.retro-tab{transition:background .15s ease,color .15s ease,box-shadow .15s ease}
-/* Notebook tabs */
-.nb-tab{transition:background .18s ease,color .18s ease,border-color .18s ease}
-/* Heatmap cells */
-.hm-cell{transition:background .2s ease}
-/* Energy slots */
-.energy-slot{transition:background .18s ease,border-color .18s ease,transform .1s ease}
+<!-- GLOBAL SEARCH -->
+<div id="global-search-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.45);z-index:700;align-items:flex-start;justify-content:center;padding-top:80px">
+  <div style="background:var(--surface);border-radius:16px;width:92%;max-width:500px;box-shadow:0 16px 48px rgba(0,0,0,.2);overflow:hidden">
+    <div style="display:flex;align-items:center;gap:8px;padding:.875rem 1rem;border-bottom:1px solid var(--border)">
+      <span style="font-size:18px">&#128269;</span>
+      <input id="global-search-input" placeholder="S&#248;k i oppgaver, m&#248;ter, notater, prosjekter..." style="flex:1;border:none;outline:none;font-size:15px;font-family:var(--font);color:var(--text);background:transparent">
+      <button onclick="toggleGlobalSearch()" style="background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer">&#10005;</button>
+    </div>
+    <div id="global-search-results" style="max-height:60vh;overflow-y:auto;padding:.5rem"></div>
+  </div>
+</div>
 
-/* Color dot pop */
-.notislapp-color-dot{transition:transform .12s ease,border-color .12s ease}
 
-/* Input focus glow */
-input:focus,textarea:focus,select:focus{transition:border-color .15s ease}
-
+  <script src="js/constants.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/sheets.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/tasks.js"></script>
+  <script src="js/projects.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/pomodoro.js"></script>
+  <script src="js/mood.js"></script>
+  <script src="js/meetings.js"></script>
+  <script src="js/retro.js"></script>
+  <script src="js/energy.js"></script>
+  <script src="js/timer.js"></script>
+  <script src="js/stats.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/personal.js"></script>
+  <script src="js/notater.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/matrise.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/init.js"></script>
+</body>
+</html>
