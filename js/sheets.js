@@ -1,4 +1,9 @@
 // js/sheets.js
+// Google Apps Script Web Apps støtter ikke ekte CORS for fetch()-baserte kall.
+// GET-kall løses med JSONP (script-tag injection, omgår CORS helt).
+// POST-kall løses med no-cors mode (fire-and-forget; vi kan ikke lese responsen,
+// men selve lagringen i Sheets fungerer siden Apps Script kjører serversiden uansett).
+
 function setSyncStatus(s){
   const dot=document.getElementById('sync-dot');
   const mkB=(txt,cls)=>'<div class="banner '+cls+'"><span>'+txt+'</span></div>';
@@ -7,12 +12,60 @@ function setSyncStatus(s){
   else{dot.className='sync-dot off';document.getElementById('banner-wrap').innerHTML=mkB('Ikke koblet til Sheets - lagres lokalt','disconnected');document.getElementById('banner-settings').innerHTML=mkB('Ikke koblet til Sheets','disconnected');}
 }
 
+// ── JSONP helper for GET (omgår CORS helt) ──
+let _jsonpCounter = 0;
+function jsonpRequest(url){
+  return new Promise((resolve, reject) => {
+    const cbName = '_jsonp_cb_' + (_jsonpCounter++);
+    const script = document.createElement('script');
+    let settled = false;
+
+    window[cbName] = (data) => {
+      settled = true;
+      resolve(data);
+      cleanup();
+    };
+
+    function cleanup(){
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+
+    script.onerror = () => {
+      if (!settled) { reject(new Error('JSONP load error')); cleanup(); }
+    };
+
+    const sep = url.includes('?') ? '&' : '?';
+    script.src = url + sep + 'callback=' + cbName;
+    document.body.appendChild(script);
+
+    setTimeout(() => {
+      if (!settled) { reject(new Error('JSONP timeout')); cleanup(); }
+    }, 10000);
+  });
+}
+
+// ── no-cors POST helper (fire-and-forget, can't read response) ──
+async function noCorsPost(url, payload){
+  try{
+    await fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    return true; // we can't actually verify, but the request was sent
+  }catch(e){
+    return false;
+  }
+}
+
 async function saveConfig(){
   const url=document.getElementById('sheets-url').value.trim();if(!url)return;
   sheetsUrl=url;try{localStorage.setItem('adhd_sheets_url',url);}catch(e){}
   setSyncStatus('syncing');
   try{
-    const r=await fetch(url+'?action=ping');const d=await r.json();
+    const d = await jsonpRequest(url+'?action=ping');
     if(d.ok){setSyncStatus('connected');await loadFromSheets();}
     else{setSyncStatus('disconnected');}
   }catch(e){setSyncStatus('disconnected');}
@@ -21,25 +74,28 @@ function clearConfig(){sheetsUrl='';try{localStorage.removeItem('adhd_sheets_url
 
 async function sheetsGet(sheet){
   if(!sheetsUrl)return null;
-  try{const r=await fetch(sheetsUrl+'?action=get&sheet='+encodeURIComponent(sheet));const d=await r.json();return d.ok?d.rows:null;}
-  catch(e){return null;}
+  try{
+    const d = await jsonpRequest(sheetsUrl+'?action=get&sheet='+encodeURIComponent(sheet));
+    return d.ok ? d.rows : null;
+  }catch(e){ return null; }
 }
 async function sheetsSave(sheet,data){
   if(!sheetsUrl)return;
-  try{await fetch(sheetsUrl,{method:'POST',body:JSON.stringify({action:'save',sheet,data})});}
-  catch(e){}
+  await noCorsPost(sheetsUrl, {action:'save', sheet, data});
 }
 async function sheetsGetBlob(sheet){
   if(!sheetsUrl)return null;
-  try{const r=await fetch(sheetsUrl+'?action=getBlob&sheet='+encodeURIComponent(sheet));const d=await r.json();return d.ok?d.json:null;}
-  catch(e){return null;}
+  try{
+    const d = await jsonpRequest(sheetsUrl+'?action=getBlob&sheet='+encodeURIComponent(sheet));
+    return d.ok ? d.json : null;
+  }catch(e){ return null; }
 }
 async function sheetsSaveBlob(sheet,jsonObj){
   if(!sheetsUrl)return;
-  try{await fetch(sheetsUrl,{method:'POST',body:JSON.stringify({action:'saveBlob',sheet,json:jsonObj})});}
-  catch(e){}
+  await noCorsPost(sheetsUrl, {action:'saveBlob', sheet, json:jsonObj});
 }
 
+// ── LOAD: pull everything from Sheets on connect ──
 async function loadFromSheets(){
   const results = await Promise.all([
     sheetsGet('Oppgaver'),
