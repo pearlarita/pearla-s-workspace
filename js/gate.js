@@ -3,7 +3,7 @@
 // Bytt PASSWORD_HASH ved å kjøre i nettleserkonsollen:
 //   crypto.subtle.digest('SHA-256', new TextEncoder().encode('dittPassord')).then(b=>console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
 
-const PASSWORD_HASH = 'REPLACE_WITH_YOUR_HASH';
+const PASSWORD_HASH = '7bf5d52fcfeab9ad5e5c31204c8d7fda3c9ede26fc1877bc68096a732c65936a';
 const GATE_SESSION_KEY = 'pearla_gate_unlocked';
 
 async function sha256(text){
